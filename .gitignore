@@ -32,3 +32,13 @@ Package.resolved
 # .swiftpm
 
 .build/
+
+# macOS
+.DS_Store
+
+# Build output
+build/
+DerivedData/
+
+# Secrets (e.g. API keys in a local xcconfig)
+Secrets.xcconfig
