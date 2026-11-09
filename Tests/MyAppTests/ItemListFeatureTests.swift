@@ -16,8 +16,7 @@ struct ItemListFeatureTests {
             $0.status = .loading
         }
         await store.receive(\.searchResponse) {
-            $0.artists = Mocks.artistSearchResponse.artists
-            $0.status = .loaded
+            $0.status = .loaded(Mocks.artistSearchResponse)
         }
     }
 

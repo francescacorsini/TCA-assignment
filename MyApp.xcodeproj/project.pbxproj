@@ -14,6 +14,16 @@
 		B10000000000000000000305 /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000105 /* APIClientTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B100000000000000000000B01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000801 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000701;
+			remoteInfo = MyApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		A10000000000000000000101 /* MyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000102 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -41,26 +51,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B10000000000000000000601 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B10000000000000000000302 /* AppFeatureTests.swift in Sources */,
-				B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */,
-				B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */,
-				B10000000000000000000305 /* APIClientTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B10000000000000000000602 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B10000000000000000000603 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -74,7 +66,7 @@
 			children = (
 				A10000000000000000000102 /* README.md */,
 				A10000000000000000000201 /* MyApp */,
-				B10000000000000000000003 /* MyAppTests */,
+				B10000000000000000000003 /* Tests/MyAppTests */,
 				A10000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,7 +80,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B10000000000000000000003 /* MyAppTests */ = {
+		B10000000000000000000003 /* Tests/MyAppTests */ = {
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000102 /* ItemListFeatureTests.swift */,
@@ -145,24 +137,6 @@
 		};
 /* End PBXNativeTarget section */
 
-/* Begin PBXContainerItemProxy section */
-		B100000000000000000000B01 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A10000000000000000000801 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A10000000000000000000701;
-			remoteInfo = MyApp;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXTargetDependency section */
-		B100000000000000000000B02 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A10000000000000000000701 /* MyApp */;
-			targetProxy = B100000000000000000000B01 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXProject section */
 		A10000000000000000000801 /* Project object */ = {
 			isa = PBXProject;
@@ -174,10 +148,10 @@
 					A10000000000000000000701 = {
 						CreatedOnToolsVersion = 27.0;
 					};
-				B10000000000000000000701 = {
-					CreatedOnToolsVersion = 27.0;
-					TestTargetID = A10000000000000000000701;
-				};
+					B10000000000000000000701 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = A10000000000000000000701;
+					};
 				};
 			};
 			buildConfigurationList = A10000000000000000000901 /* Build configuration list for PBXProject "MyApp" */;
@@ -211,6 +185,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B10000000000000000000603 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -221,7 +202,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B10000000000000000000601 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000302 /* AppFeatureTests.swift in Sources */,
+				B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */,
+				B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */,
+				B10000000000000000000305 /* APIClientTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B100000000000000000000B02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000701 /* MyApp */;
+			targetProxy = B100000000000000000000B01 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A10000000000000000000A01 /* Debug */ = {

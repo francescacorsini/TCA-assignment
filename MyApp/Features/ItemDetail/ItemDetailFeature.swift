@@ -6,22 +6,13 @@ import Foundation
 struct ItemDetailFeature {
     @ObservableState
     struct State: Equatable {
-        /// The artist selected from the search results, enriched after a successful lookup.
+        /// The artist selected from the search results; shown until the full lookup arrives.
         var artist: Artist
-        /// The loading state for the artist lookup and release groups.
-        var status: Status = .idle
+        /// The artist lookup; `.loaded` carries the full record including release groups.
+        var status: LoadingState<Artist> = .idle
 
-        /// The mutually exclusive states of the artist lookup.
-        enum Status: Equatable {
-            /// The lookup has not started yet.
-            case idle
-            /// MusicBrainz is loading the artist's full record.
-            case loading
-            /// The lookup completed successfully; release groups may be empty.
-            case loaded
-            /// The lookup failed and includes a message suitable for display.
-            case failed(message: String)
-        }
+        /// The richest artist data available: the full lookup once loaded, otherwise the search result.
+        var displayedArtist: Artist { status.value ?? artist }
     }
 
     /// User intents and asynchronous lookup results handled by the detail feature.
@@ -47,37 +38,14 @@ struct ItemDetailFeature {
             switch action {
             case .loadArtist:
                 guard state.status == .idle else { return .none }
-                state.status = .loading
-                let artistID = state.artist.id
-
-                return .run { [artistID] send in
-                    do {
-                        let artist = try await apiClient.fetchArtist(artistID)
-                        await send(.artistResponse(.success(artist)))
-                    } catch {
-                        await send(.artistResponse(.failure(error)))
-                    }
-                }
-                .cancellable(id: CancelID.artistLookup, cancelInFlight: true)
+                return fetchArtist(&state)
 
             case .retryButtonTapped:
                 guard case .failed = state.status else { return .none }
-                state.status = .loading
-                let artistID = state.artist.id
-
-                return .run { [artistID] send in
-                    do {
-                        let artist = try await apiClient.fetchArtist(artistID)
-                        await send(.artistResponse(.success(artist)))
-                    } catch {
-                        await send(.artistResponse(.failure(error)))
-                    }
-                }
-                .cancellable(id: CancelID.artistLookup, cancelInFlight: true)
+                return fetchArtist(&state)
 
             case let .artistResponse(.success(artist)):
-                state.artist = artist
-                state.status = .loaded
+                state.status = .loaded(artist)
                 return .none
 
             case let .artistResponse(.failure(error)):
@@ -85,5 +53,22 @@ struct ItemDetailFeature {
                 return .none
             }
         }
+    }
+
+    /// Marks the lookup as loading and starts fetching the artist's full record.
+    /// A newer lookup cancels any request still in flight.
+    private func fetchArtist(_ state: inout State) -> Effect<Action> {
+        state.status = .loading
+        let artistID = state.artist.id
+
+        return .run { [artistID] send in
+            do {
+                let artist = try await apiClient.fetchArtist(artistID)
+                await send(.artistResponse(.success(artist)))
+            } catch {
+                await send(.artistResponse(.failure(error)))
+            }
+        }
+        .cancellable(id: CancelID.artistLookup, cancelInFlight: true)
     }
 }

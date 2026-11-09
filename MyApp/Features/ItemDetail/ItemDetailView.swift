@@ -20,7 +20,7 @@ struct ItemDetailView: View {
                         ProgressView("Loading releases…")
                             .frame(maxWidth: .infinity, minHeight: 120)
 
-                    case .loaded where store.artist.releaseGroups?.isEmpty != false:
+                    case let .loaded(artist) where artist.releaseGroups?.isEmpty ?? true:
                         ContentUnavailableView(
                             "No release groups",
                             systemImage: "opticaldisc",
@@ -28,8 +28,8 @@ struct ItemDetailView: View {
                         )
                         .frame(maxWidth: .infinity, minHeight: 160)
 
-                    case .loaded:
-                        ForEach(store.artist.releaseGroups ?? []) { releaseGroup in
+                    case let .loaded(artist):
+                        ForEach(artist.releaseGroups ?? []) { releaseGroup in
                             ReleaseGroupRow(releaseGroup: releaseGroup)
                         }
 
@@ -58,27 +58,29 @@ struct ItemDetailView: View {
     }
 
     private var artistInformation: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(store.artist.name)
+        let artist = store.displayedArtist
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(artist.name)
                 .font(.largeTitle.bold())
 
-            if let disambiguation = store.artist.disambiguation, !disambiguation.isEmpty {
+            if let disambiguation = artist.disambiguation, !disambiguation.isEmpty {
                 Text(disambiguation)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
-            LabeledContent("Type", value: store.artist.type ?? "Unknown")
+            LabeledContent("Type", value: artist.type ?? "Unknown")
 
-            if let location = store.artist.beginArea?.name ?? store.artist.area?.name {
+            if let location = artist.beginArea?.name ?? artist.area?.name {
                 LabeledContent("Origin", value: location)
             }
 
-            if let country = store.artist.country {
+            if let country = artist.country {
                 LabeledContent("Country", value: country)
             }
 
-            if let lifeSpan = store.artist.lifeSpan?.formattedRange {
+            if let lifeSpan = artist.lifeSpan?.formattedRange {
                 LabeledContent("Active", value: lifeSpan)
             }
         }
@@ -116,7 +118,7 @@ private struct ReleaseGroupRow: View {
         ItemDetailView(
             store: Store(initialState: ItemDetailFeature.State(
                 artist: Mocks.artist,
-                status: .loaded
+                status: .loaded(Mocks.artist)
             )) {
                 ItemDetailFeature()
             } withDependencies: {

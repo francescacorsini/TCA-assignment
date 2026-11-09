@@ -16,8 +16,7 @@ struct ItemDetailFeatureTests {
             $0.status = .loading
         }
         await store.receive(\.artistResponse) {
-            $0.artist = Mocks.artist
-            $0.status = .loaded
+            $0.status = .loaded(Mocks.artist)
         }
     }
 

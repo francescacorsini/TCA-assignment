@@ -20,7 +20,7 @@ struct ItemListView: View {
                 ProgressView("Searching MusicBrainz…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            case .loaded where store.artists.isEmpty:
+            case let .loaded(response) where response.artists.isEmpty:
                 ContentUnavailableView(
                     "No artists found",
                     systemImage: "music.note.list",
@@ -28,8 +28,8 @@ struct ItemListView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            case .loaded:
-                List(store.artists) { artist in
+            case let .loaded(response):
+                List(response.artists) { artist in
                     Button {
                         store.send(.delegate(.artistSelected(artist)))
                     } label: {
@@ -100,8 +100,7 @@ private struct ArtistRow: View {
         ItemListView(
             store: Store(initialState: ItemListFeature.State(
                 query: "Radiohead",
-                artists: Mocks.artistSearchResponse.artists,
-                status: .loaded
+                status: .loaded(Mocks.artistSearchResponse)
             )) {
                 ItemListFeature()
             } withDependencies: {

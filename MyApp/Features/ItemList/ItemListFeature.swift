@@ -8,22 +8,8 @@ struct ItemListFeature {
     struct State: Equatable {
         /// The text currently entered in the artist search field.
         var query = ""
-        /// The artists returned by the most recent successful search.
-        var artists: [Artist] = []
-        /// The current phase of the search flow, used to select the screen's content state.
-        var status: Status = .idle
-
-        /// The mutually exclusive states of the artist search flow.
-        enum Status: Equatable {
-            /// Nothing searched yet: show a prompt.
-            case idle
-            /// First page of a new search is in flight.
-            case loading
-            /// A search completed successfully; results may be empty.
-            case loaded
-            /// The search failed and includes a message suitable for display.
-            case failed(message: String)
-        }
+        /// The current phase of the search; `.loaded` carries the latest search response.
+        var status: LoadingState<ArtistSearchResponse> = .idle
     }
 
     /// User intents and asynchronous results handled by the list feature.
@@ -59,7 +45,6 @@ struct ItemListFeature {
             switch action {
             case let .queryChanged(query):
                 state.query = query
-                state.artists = []
                 state.status = .idle
                 return .cancel(id: CancelID.search)
 
@@ -88,12 +73,10 @@ struct ItemListFeature {
                 return .none
 
             case let .searchResponse(.success(response)):
-                state.artists = response.artists
-                state.status = .loaded
+                state.status = .loaded(response)
                 return .none
 
             case let .searchResponse(.failure(error)):
-                state.artists = []
                 state.status = .failed(message: error.localizedDescription)
                 return .none
             }
