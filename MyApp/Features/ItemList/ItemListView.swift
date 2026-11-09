@@ -51,7 +51,12 @@ struct ItemListView: View {
 
             case .loaded:
                 List(store.artists) { artist in
-                    ArtistRow(artist: artist)
+                    Button {
+                        store.send(.delegate(.artistSelected(artist)))
+                    } label: {
+                        ArtistRow(artist: artist)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
 

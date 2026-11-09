@@ -34,8 +34,16 @@ struct ItemListFeature {
         case searchButtonTapped
         /// Retries the artist search after a failure.
         case retryButtonTapped
+        /// Announces a user selection to the parent feature for navigation.
+        case delegate(Delegate)
         /// Delivers the result of an artist search request.
         case searchResponse(TaskResult<ArtistSearchResponse>)
+    }
+
+    /// Events the list feature delegates to its parent.
+    enum Delegate {
+        /// The user selected an artist to inspect.
+        case artistSelected(Artist)
     }
 
     @Dependency(\.apiClient) private var apiClient
@@ -75,6 +83,9 @@ struct ItemListFeature {
                     }
                 }
                 .cancellable(id: CancelID.search, cancelInFlight: true)
+
+            case .delegate:
+                return .none
 
             case let .searchResponse(.success(response)):
                 state.artists = response.artists

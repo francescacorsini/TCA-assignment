@@ -77,6 +77,22 @@ struct ArtistLifeSpan: Decodable, Equatable {
     let end: String?
     /// Whether the artist has ended. Search results often return `null` instead of `false`.
     let ended: Bool?
+
+    /// Formats known lifespan dates as a range, using "present" for an active artist.
+    /// Returns `nil` when MusicBrainz has no lifespan dates to display.
+    var formattedRange: String? {
+        let endDate = ended == false ? "present" : end
+        switch (begin, endDate) {
+        case let (begin?, end?):
+            return "\(begin) – \(end)"
+        case let (begin?, nil):
+            return begin
+        case let (nil, end?):
+            return end
+        case (nil, nil):
+            return nil
+        }
+    }
 }
 
 /// A release group: a logical album, single or EP, grouping all its editions

@@ -5,8 +5,8 @@ Assignment about small iOS app using The Composable Architecture.
 A small iOS app built with **SwiftUI** and **The Composable Architecture (TCA)**.
 It has up to three screens on top of the public MusicBrainz REST API.
 
-> **Status:** MusicBrainz artist search is implemented through a TCA dependency, including loading,
-> error and empty states. Artist detail, navigation from a result, and tests remain to be completed.
+> **Status:** MusicBrainz artist search and artist detail navigation are implemented through TCA
+> dependencies. The detail screen loads release groups; tests remain to be completed.
 
 ---
 
@@ -89,13 +89,14 @@ AppFeature
   screens through `StackState<Path.State>`. Views observe state through `@ObservableState`.
 - **Upward flow.** Views send actions to their own feature. Child actions are embedded in the
   parent's `Action` (`.list(...)`, `.path(...)`). The parent reduces them after the child, so it
-  can react to them. For example, it pushes `.detail` onto `path` when the list reports a
-  selection.
+  can react to them. The list delegates an artist selection to the parent, which pushes the
+  selected artist's detail feature onto `path`.
 - **Navigation is state.** Pushing or popping a screen means appending or removing an element of
   `path`. `AppView` binds `NavigationStack(path:)` to that state, and `.forEach(\.path, action:
   \.path)` runs the reducer of each pushed screen.
 - **Side effects go through dependencies.** Reducers never call `URLSession` directly. The list
-  requests artist search through `@Dependency(\.apiClient)`.
+  searches artists and the detail feature loads an artist with release groups through
+  `@Dependency(\.apiClient)`.
 
 ## API integration
 
@@ -127,10 +128,11 @@ No other third-party dependencies are used. Networking will use `URLSession`.
   through `View`, and the TCA `Store` is `@MainActor` itself.
 - **Stack-based navigation (`StackState`)** instead of tree-based (`@Presents`). A list → detail
   flow is a natural push, and the stack scales if more screens are added.
-- **Detail remains a placeholder** while the artist search flow is implemented first.
+- **Artist lookup loads up to 25 release groups** in one request, following MusicBrainz's lookup
+  limit for linked entities.
 
-_To be completed as the app takes shape: artist detail and navigation, the extra interaction,
-tests, and what I would do with more time._
+_To be completed as the app takes shape: the extra interaction, tests, and what I would do with
+more time._
 
 ## Tests
 

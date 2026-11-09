@@ -43,8 +43,11 @@ struct AppFeature {
 
         Reduce { state, action in
             switch action {
+            case let .list(.delegate(.artistSelected(artist))):
+                state.path.append(.detail(ItemDetailFeature.State(artist: artist)))
+                return .none
+
             case .list:
-                // TODO: Push the detail screen when the list asks for it.
                 return .none
 
             case .path:
