@@ -5,9 +5,8 @@ Assignment about small iOS app using The Composable Architecture.
 A small iOS app built with **SwiftUI** and **The Composable Architecture (TCA)**.
 It has up to three screens on top of the public MusicBrainz REST API.
 
-> **Status:** project skeleton. The TCA structure (features, navigation, dependency client) is in
-> place with empty placeholders. The public API, the screen content and the tests will be added
-> in later commits.
+> **Status:** MusicBrainz artist search is implemented through a TCA dependency, including loading,
+> error and empty states. Artist detail, navigation from a result, and tests remain to be completed.
 
 ---
 
@@ -66,7 +65,8 @@ MyApp/
 │   └── ItemDetail/
 │       ├── ItemDetailFeature.swift // Detail screen reducer
 │       └── ItemDetailView.swift    // Detail screen view
-├── Models.swift                    // Codable models for MusicBrainz artist and release-group data
+├── Models/
+│   └── Models.swift                // Codable models for MusicBrainz artist and release-group data
 ├── Dependencies/
 │   └── APIClient/
 │       └── APIClient.swift    // The client used by features to talk to the remote API
@@ -94,8 +94,8 @@ AppFeature
 - **Navigation is state.** Pushing or popping a screen means appending or removing an element of
   `path`. `AppView` binds `NavigationStack(path:)` to that state, and `.forEach(\.path, action:
   \.path)` runs the reducer of each pushed screen.
-- **Side effects go through dependencies.** Reducers never call `URLSession` directly. They will use
-  `@Dependency(\.apiClient).`
+- **Side effects go through dependencies.** Reducers never call `URLSession` directly. The list
+  requests artist search through `@Dependency(\.apiClient)`.
 
 ## API integration
 
@@ -104,7 +104,7 @@ The app uses the public [MusicBrainz Web Service](https://musicbrainz.org/doc/Mu
 - Search artists: `GET https://musicbrainz.org/ws/2/artist/?query=artist:radiohead&fmt=json&limit=25`
 - Look up an artist and their release groups: `GET https://musicbrainz.org/ws/2/artist/{MBID}?inc=release-groups&fmt=json`
 
-MusicBrainz asks clients to send a descriptive `User-Agent` and limits requests to an average of one per second per IP address. Its community-maintained catalogue can contain incomplete or ambiguous metadata, and release groups are limited to 25 in a lookup response; the app should present missing fields gracefully.
+MusicBrainz asks clients to send a descriptive `User-Agent` and limits requests to an average of one per second per IP address. The API client sends an app name/version and repository URL in the header and spaces requests at least one second apart. Its community-maintained catalogue can contain incomplete or ambiguous metadata, and release groups are limited to 25 in a lookup response; the app treats optional fields as missing data.
 
 ## Third-party dependencies
 
@@ -119,7 +119,7 @@ No other third-party dependencies are used. Networking will use `URLSession`.
 - **SwiftUI only.** No UIKit.
 - **iOS 17 minimum.** This lets the views use Observation through `@ObservableState` (backported by
   TCA where needed) and `@Bindable` for navigation bindings.
-- **MusicBrainz** provides artist search and detail data without an API key. Its rate limit and community-maintained metadata mean requests must be paced and fields treated as optional.
+- **MusicBrainz** provides artist search and detail data without an API key. Its rate limit and community-maintained metadata mean requests are paced and fields are treated as optional.
 - **Default actor isolation is `nonisolated`.** Xcode's new-project default of
   `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` infers MainActor-isolated conformances for the
   `@Reducer` types. That produces a `circular reference` error while the compiler resolves
@@ -127,10 +127,10 @@ No other third-party dependencies are used. Networking will use `URLSession`.
   through `View`, and the TCA `Store` is `@MainActor` itself.
 - **Stack-based navigation (`StackState`)** instead of tree-based (`@Presents`). A list → detail
   flow is a natural push, and the stack scales if more screens are added.
-- **Placeholder reducers use `EmptyReducer()`** while their `Action` enums have no cases.
+- **Detail remains a placeholder** while the artist search flow is implemented first.
 
-_To be completed as the app takes shape: chosen API and endpoints, the extra interaction,
-error-handling and cancellation strategy, and what I would do with more time._
+_To be completed as the app takes shape: artist detail and navigation, the extra interaction,
+tests, and what I would do with more time._
 
 ## Tests
 
