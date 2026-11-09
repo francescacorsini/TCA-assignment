@@ -26,8 +26,8 @@ struct ItemDetailFeature {
 
     /// User intents and asynchronous lookup results handled by the detail feature.
     enum Action {
-        /// Starts loading the selected artist's full record.
-        case task
+        /// Loads the selected artist's full MusicBrainz record.
+        case loadArtist
         /// Retries the lookup after a failure.
         case retryButtonTapped
         /// Delivers the result of an artist lookup request.
@@ -45,7 +45,23 @@ struct ItemDetailFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .task, .retryButtonTapped:
+            case .loadArtist:
+                guard state.status == .idle else { return .none }
+                state.status = .loading
+                let artistID = state.artist.id
+
+                return .run { [artistID] send in
+                    do {
+                        let artist = try await apiClient.fetchArtist(artistID)
+                        await send(.artistResponse(.success(artist)))
+                    } catch {
+                        await send(.artistResponse(.failure(error)))
+                    }
+                }
+                .cancellable(id: CancelID.artistLookup, cancelInFlight: true)
+
+            case .retryButtonTapped:
+                guard case .failed = state.status else { return .none }
                 state.status = .loading
                 let artistID = state.artist.id
 

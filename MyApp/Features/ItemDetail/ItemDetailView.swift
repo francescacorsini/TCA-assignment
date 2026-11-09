@@ -53,7 +53,7 @@ struct ItemDetailView: View {
         .navigationTitle(store.artist.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await store.send(.task).finish()
+            await store.send(.loadArtist).finish()
         }
     }
 
@@ -115,31 +115,7 @@ private struct ReleaseGroupRow: View {
     NavigationStack {
         ItemDetailView(
             store: Store(initialState: ItemDetailFeature.State(
-                artist: Artist(
-                    id: "a4f0b8b7-7e3a-4a1a-b8c8-2211cce4ca7e",
-                    name: "Radiohead",
-                    sortName: "Radiohead",
-                    type: "Group",
-                    country: "GB",
-                    area: MusicBrainzArea(id: nil, name: "England"),
-                    beginArea: MusicBrainzArea(id: nil, name: "Abingdon"),
-                    disambiguation: "UK alternative rock band",
-                    lifeSpan: ArtistLifeSpan(begin: "1985", end: nil, ended: false),
-                    releaseGroups: [
-                        ReleaseGroup(
-                            id: "release-group-1",
-                            title: "OK Computer",
-                            firstReleaseDate: "1997",
-                            primaryType: "Album"
-                        ),
-                        ReleaseGroup(
-                            id: "release-group-2",
-                            title: "In Rainbows",
-                            firstReleaseDate: "2007",
-                            primaryType: "Album"
-                        )
-                    ]
-                ),
+                artist: Mocks.artist,
                 status: .loaded
             )) {
                 ItemDetailFeature()

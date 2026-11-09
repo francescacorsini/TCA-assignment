@@ -66,7 +66,8 @@ MyApp/
 │       ├── ItemDetailFeature.swift // Detail screen reducer
 │       └── ItemDetailView.swift    // Detail screen view
 ├── Models/
-│   └── Models.swift                // Codable models for MusicBrainz artist and release-group data
+│   ├── Models.swift                // Codable models for MusicBrainz artist and release-group data
+│   └── Mocks.swift                 // Shared static mock data used by SwiftUI previews
 ├── Dependencies/
 │   └── APIClient/
 │       └── APIClient.swift    // The client used by features to talk to the remote API

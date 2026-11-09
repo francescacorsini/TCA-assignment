@@ -109,20 +109,7 @@ private struct ArtistRow: View {
         ItemListView(
             store: Store(initialState: ItemListFeature.State(
                 query: "Radiohead",
-                artists: [
-                    Artist(
-                        id: "a4f0b8b7-7e3a-4a1a-b8c8-2211cce4ca7e",
-                        name: "Radiohead",
-                        sortName: "Radiohead",
-                        type: "Group",
-                        country: "GB",
-                        area: MusicBrainzArea(id: nil, name: "England"),
-                        beginArea: MusicBrainzArea(id: nil, name: "Abingdon"),
-                        disambiguation: "UK alternative rock band",
-                        lifeSpan: ArtistLifeSpan(begin: "1985", end: nil, ended: false),
-                        releaseGroups: nil
-                    )
-                ],
+                artists: Mocks.artistSearchResponse.artists,
                 status: .loaded
             )) {
                 ItemListFeature()
