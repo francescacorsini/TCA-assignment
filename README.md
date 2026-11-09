@@ -134,7 +134,7 @@ No other third-party dependencies are used. Networking will use `URLSession`.
 - **Artist lookup loads up to 25 release groups** in one request, following MusicBrainz's lookup
   limit for linked entities.
 
-_To be completed as the app takes shape: the extra interaction and what I would do with more time._
+_To be completed as the app takes shape: other fancy extra interactions and what I would do with more time._
 
 ## Tests
 

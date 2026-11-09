@@ -6,28 +6,7 @@ struct ItemListView: View {
     @Bindable var store: StoreOf<ItemListFeature>
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                TextField(
-                    "Artist name",
-                    text: Binding(
-                        get: { store.query },
-                        set: { store.send(.queryChanged($0)) }
-                    )
-                )
-                .textInputAutocapitalization(.words)
-                .autocorrectionDisabled()
-                .submitLabel(.search)
-                .onSubmit { store.send(.searchButtonTapped) }
-
-                Button("Search") {
-                    store.send(.searchButtonTapped)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(store.status == .loading)
-            }
-            .padding()
-
+        Group {
             switch store.status {
             case .idle:
                 ContentUnavailableView(
@@ -75,6 +54,18 @@ struct ItemListView: View {
             }
         }
         .navigationTitle("Artists")
+        // System search field: on iOS 26+ it renders as a Liquid Glass control
+        // in the toolbar (bottom on iPhone), and the list scrolls beneath it.
+        .searchable(
+            text: Binding(
+                get: { store.query },
+                set: { store.send(.queryChanged($0)) }
+            ),
+            prompt: "Artist name"
+        )
+        .textInputAutocapitalization(.words)
+        .autocorrectionDisabled()
+        .onSubmit(of: .search) { store.send(.searchButtonTapped) }
     }
 }
 
