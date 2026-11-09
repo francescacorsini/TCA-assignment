@@ -67,6 +67,12 @@ struct APIClient {
 }
 
 extension APIClient: DependencyKey {
+    /// A deterministic client backed by mock data for SwiftUI previews.
+    static let previewValue = Self(
+        searchArtists: { _ in Mocks.artistSearchResponse },
+        fetchArtist: { _ in Mocks.artist }
+    )
+
     /// The live implementation that sends requests to the MusicBrainz Web Service.
     static let liveValue = Self(
         searchArtists: { query in

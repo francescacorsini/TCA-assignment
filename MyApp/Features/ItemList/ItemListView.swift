@@ -113,6 +113,8 @@ private struct ArtistRow: View {
                 status: .loaded
             )) {
                 ItemListFeature()
+            } withDependencies: {
+                $0.apiClient = .previewValue
             }
         )
     }

@@ -70,7 +70,7 @@ MyApp/
 │   └── Mocks.swift                 // Shared static mock data used by SwiftUI previews
 ├── Dependencies/
 │   └── APIClient/
-│       └── APIClient.swift    // The client used by features to talk to the remote API
+│       └── APIClient.swift    // TCA live and mock-preview implementations for MusicBrainz
 └── Assets.xcassets
 ```
 

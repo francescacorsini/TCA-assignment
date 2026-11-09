@@ -119,6 +119,8 @@ private struct ReleaseGroupRow: View {
                 status: .loaded
             )) {
                 ItemDetailFeature()
+            } withDependencies: {
+                $0.apiClient = .previewValue
             }
         )
     }
