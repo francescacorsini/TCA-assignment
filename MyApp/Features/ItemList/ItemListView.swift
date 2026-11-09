@@ -62,7 +62,7 @@ struct ItemListView: View {
                     Text(message)
                 } actions: {
                     Button("Try Again") {
-                        store.send(.searchButtonTapped)
+                        store.send(.retryButtonTapped)
                     }
                     .buttonStyle(.borderedProminent)
                 }

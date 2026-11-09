@@ -32,6 +32,8 @@ struct ItemListFeature {
         case queryChanged(String)
         /// Starts an artist search for the current query.
         case searchButtonTapped
+        /// Retries the artist search after a failure.
+        case retryButtonTapped
         /// Delivers the result of an artist search request.
         case searchResponse(TaskResult<ArtistSearchResponse>)
     }
@@ -53,7 +55,7 @@ struct ItemListFeature {
                 state.status = .idle
                 return .cancel(id: CancelID.search)
 
-            case .searchButtonTapped:
+            case .searchButtonTapped, .retryButtonTapped:
                 let query = state.query.trimmingCharacters(in: .whitespacesAndNewlines)
                 // Ignore writes that don't change what we'd search for: the same text, or
                 // only leading/trailing whitespace.
