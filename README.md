@@ -5,8 +5,9 @@ Assignment about small iOS app using The Composable Architecture.
 A small iOS app built with **SwiftUI** and **The Composable Architecture (TCA)**.
 It has up to three screens on top of the public MusicBrainz REST API.
 
-> **Status:** MusicBrainz artist search and artist detail navigation are implemented through TCA
-> dependencies. The detail screen loads release groups, with reducer tests written using Swift Testing.
+> **Status:** Artist search and artist detail are implemented with TCA. The detail screen shows the
+> artist's release groups with album covers. Offline, rate-limit and decoding errors are handled,
+> and the reducers and API client are covered by Swift Testing tests.
 
 ---
 
@@ -55,25 +56,30 @@ feature.
 ```
 MyApp/
 ├── App/
-│   ├── MyApp.swift            // @main entry point, creates the root Store
-│   ├── AppFeature.swift       // Root reducer: composes features, owns the navigation stack
-│   └── AppView.swift          // NavigationStack bound to AppFeature.State.path
+│   ├── MyApp.swift                 // @main entry point, creates the root Store
+│   ├── AppFeature.swift            // Root reducer: composes features, owns the navigation stack
+│   └── AppView.swift               // NavigationStack bound to AppFeature.State.path
 ├── Features/
 │   ├── ItemList/
-│   │   ├── ItemListFeature.swift   // List screen reducer (loading / empty / error states)
-│   │   └── ItemListView.swift      // List screen view
+│   │   ├── ItemListFeature.swift   // Search screen reducer (idle / loading / loaded / failed)
+│   │   └── ItemListView.swift      // Search screen view, with the system search field
 │   └── ItemDetail/
-│       ├── ItemDetailFeature.swift // Detail screen reducer
-│       └── ItemDetailView.swift    // Detail screen view
+│       ├── ItemDetailFeature.swift // Detail screen reducer: artist lookup and retry
+│       └── ItemDetailView.swift    // Detail screen view, with album cover thumbnails
 ├── Models/
-│   ├── Models.swift                // Codable models for MusicBrainz artist and release-group data
-│   └── Mocks.swift                 // Shared static mock data used by SwiftUI previews
+│   ├── Models.swift                // Decodable models for MusicBrainz artist and release-group data
+│   ├── LoadingState.swift          // Generic idle / loading / loaded(Value) / failed state
+│   └── Mocks.swift                 // Shared static mock data used by previews and tests
 ├── Dependencies/
 │   └── APIClient/
-│       └── APIClient.swift    // TCA live and mock-preview implementations for MusicBrainz
-├── Tests/
-│   └── MyAppTests/             // Swift Testing coverage for list, detail, and navigation reducers
+│       └── APIClient.swift         // MusicBrainz client: live and preview values, error mapping
 └── Assets.xcassets
+Tests/
+└── MyAppTests/
+    ├── ItemListFeatureTests.swift   // Search reducer: success, blank query, errors
+    ├── ItemDetailFeatureTests.swift // Detail reducer: lookup success and errors
+    ├── AppFeatureTests.swift        // Navigation: selecting an artist pushes the detail screen
+    └── APIClientTests.swift         // Live client: error mapping and request encoding (stubbed network)
 ```
 
 ### Feature tree and state flow
@@ -123,7 +129,8 @@ The archive redirects to the image on archive.org, or answers `404` when a relea
 | --- | --- |
 | [swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) (≥ 1.25.0, < 2.0.0) | Required by the assignment. |
 
-No other third-party dependencies are used. Networking will use `URLSession`.
+No other third-party dependencies are used. Networking uses `URLSession`, and album covers use
+SwiftUI's `AsyncImage`.
 
 ## Decisions and trade-offs
 
@@ -131,11 +138,22 @@ No other third-party dependencies are used. Networking will use `URLSession`.
 - **iOS 17 minimum.** This lets the views use Observation through `@ObservableState` (backported by
   TCA where needed) and `@Bindable` for navigation bindings.
 - **MusicBrainz** provides artist search and detail data without an API key. Its rate limit and community-maintained metadata mean requests are paced and fields are treated as optional.
-- **Default actor isolation is `nonisolated`.** Xcode's new-project default of
-  `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` infers MainActor-isolated conformances for the
-  `@Reducer` types. That produces a `circular reference` error while the compiler resolves
-  `ReducerOf<Self>`. With the classic `nonisolated` default, SwiftUI views stay on the main actor
-  through `View`, and the TCA `Store` is `@MainActor` itself.
+- **Swift 6 language mode** for the app and test targets, so data-race safety is checked at
+  compile time.
+- **Default actor isolation is set to `nonisolated`.** New Xcode projects default to
+  `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, which implicitly marks every type as `@MainActor`.
+  With that setting, the `@Reducer` macro's generated `Reducer` conformance fails to compile with a
+  "circular reference" error. Reverting to the classic `nonisolated` default fixes it without losing
+  main-thread safety: SwiftUI `View`s are `@MainActor` through the `View` protocol, the TCA `Store`
+  is `@MainActor` itself, and reducers are plain value types that the `Store` runs on the main actor.
+- **One generic `LoadingState<Value>`** shared by both screens. The loaded data lives inside the
+  `.loaded` case, so a screen can't show stale results while it is loading or has failed.
+- **Typed API errors.** `APIClientError` maps no connection to `.offline`, HTTP 503 (MusicBrainz's
+  rate-limit response) to `.rateLimited`, and malformed JSON to `.decoding`, each with a readable
+  message. Cancelled requests become `CancellationError`, so a newer search silently replaces the
+  previous one.
+- **A blank search is not an error.** Submitting an empty query keeps the idle prompt and doesn't
+  call the API.
 - **Stack-based navigation (`StackState`)** instead of tree-based (`@Presents`). A list → detail
   flow is a natural push, and the stack scales if more screens are added.
 - **Artist lookup loads up to 25 release groups** in one request, following MusicBrainz's lookup
@@ -148,13 +166,17 @@ No other third-party dependencies are used. Networking will use `URLSession`.
   lot of machinery for thumbnails in a demo app. In a production app that needed disk caching,
   offline support or tested image behaviour, I'd move image loading into a dependency.
 
-_To be completed as the app takes shape: other fancy extra interactions and what I would do with more time._
 
 ## Tests
 
-Tests use **Swift Testing** and TCA's `TestStore` to cover successful artist search, empty-query
-validation, detail lookup, and navigation to the selected artist. API calls are replaced with mock
-dependencies, so these tests do not depend on network availability.
+Tests use **Swift Testing** and TCA's `TestStore`, and none of them touch the real network:
+
+- **Reducers:** successful search, blank-query handling, detail lookup, navigation to the selected
+  artist, and the offline / rate-limited / decoding error messages on both screens. The API client
+  is replaced with mock dependencies.
+- **Live API client:** a stub `URLProtocol` intercepts requests to check how connection errors,
+  cancellation, HTTP 503 / 500 and malformed JSON map to `APIClientError`, and that `+` in a search
+  query is percent-encoded. This suite runs serially because the stub is shared state.
 
 ## Use of AI tools
 
