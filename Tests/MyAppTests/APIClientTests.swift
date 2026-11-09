@@ -15,6 +15,17 @@ final class APIClientTests {
     deinit {
         URLProtocol.unregisterClass(StubURLProtocol.self)
         StubURLProtocol.result = nil
+        StubURLProtocol.lastRequest = nil
+    }
+
+    @Test
+    func plusSignInQueryIsPercentEncoded() async throws {
+        StubURLProtocol.result = .success((statusCode: 200, body: Data(#"{"count":0,"offset":0,"artists":[]}"#.utf8)))
+
+        _ = try await APIClient.liveValue.searchArtists("Bob + Earl")
+
+        let query = try #require(StubURLProtocol.lastRequest?.url?.query(percentEncoded: true))
+        #expect(query.contains("artist:Bob%20%2B%20Earl"))
     }
 
     @Test
@@ -86,6 +97,8 @@ final class APIClientTests {
 private final class StubURLProtocol: URLProtocol {
     /// The canned outcome for the next intercepted request.
     nonisolated(unsafe) static var result: Result<(statusCode: Int, body: Data), URLError>?
+    /// The most recent request the stub intercepted, so tests can inspect what was sent.
+    nonisolated(unsafe) static var lastRequest: URLRequest?
 
     override class func canInit(with request: URLRequest) -> Bool {
         request.url?.host == "musicbrainz.org"
@@ -96,6 +109,7 @@ private final class StubURLProtocol: URLProtocol {
     }
 
     override func startLoading() {
+        Self.lastRequest = request
         switch Self.result {
         case let .success((statusCode, body)):
             guard

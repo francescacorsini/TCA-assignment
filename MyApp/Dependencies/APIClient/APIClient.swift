@@ -29,6 +29,10 @@ private struct MusicBrainzRequest {
         var components = URLComponents(string: "https://musicbrainz.org/ws/2/")!
         components.path += path
         components.queryItems = queryItems
+        // URLComponents leaves "+" unencoded in query values, and servers decode a bare "+" as a
+        // space. Encode it explicitly so a search like "Bob + Earl" reaches MusicBrainz intact.
+        components.percentEncodedQuery = components.percentEncodedQuery?
+            .replacingOccurrences(of: "+", with: "%2B")
 
         guard let url = components.url else {
             throw APIClientError.genericError("Failed to create URL request.")
