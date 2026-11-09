@@ -77,8 +77,10 @@ private struct ArtistRow: View {
             Text(artist.name)
                 .font(.headline)
 
+            // MusicBrainz can send empty strings for unknown fields, so drop those too.
             let metadata = [artist.type, artist.area?.name, artist.country]
                 .compactMap { $0 }
+                .filter { !$0.isEmpty }
             if !metadata.isEmpty {
                 Text(metadata.joined(separator: " · "))
                     .font(.subheadline)

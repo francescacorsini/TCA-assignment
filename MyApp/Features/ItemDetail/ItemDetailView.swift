@@ -100,8 +100,10 @@ private struct ReleaseGroupRow: View {
                 Text(releaseGroup.title)
                     .font(.headline)
 
+                // `firstReleaseDate` is an empty string when unknown, so drop empty values too.
                 let metadata = [releaseGroup.primaryType, releaseGroup.firstReleaseDate]
                     .compactMap { $0 }
+                    .filter { !$0.isEmpty }
                 if !metadata.isEmpty {
                     Text(metadata.joined(separator: " · "))
                         .font(.subheadline)

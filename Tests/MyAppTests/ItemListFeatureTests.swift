@@ -21,16 +21,18 @@ struct ItemListFeatureTests {
     }
 
     @Test
-    func emptyQueryShowsValidationWithoutCallingAPI() async {
-        let store = TestStore(initialState: ItemListFeature.State()) {
+    func blankQueryStaysIdleWithoutCallingAPI() async {
+        let store = TestStore(initialState: ItemListFeature.State(query: "   ")) {
             ItemListFeature()
         } withDependencies: {
-            $0.apiClient.searchArtists = { _ in Mocks.artistSearchResponse }
+            $0.apiClient.searchArtists = { _ in
+                Issue.record("A blank query must not call the API.")
+                return Mocks.artistSearchResponse
+            }
         }
 
-        await store.send(.searchButtonTapped) {
-            $0.status = .failed(message: "Enter an artist name to search.")
-        }
+        // No state change: the screen stays on the idle prompt.
+        await store.send(.searchButtonTapped)
     }
 
     @Test(arguments: [APIClientError.offline, .rateLimited, .decoding])

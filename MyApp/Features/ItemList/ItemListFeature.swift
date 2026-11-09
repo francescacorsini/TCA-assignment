@@ -50,10 +50,10 @@ struct ItemListFeature {
 
             case .searchButtonTapped, .retryButtonTapped:
                 let query = state.query.trimmingCharacters(in: .whitespacesAndNewlines)
-                // Ignore writes that don't change what we'd search for: the same text, or
-                // only leading/trailing whitespace.
+                // An empty or whitespace-only query is not a failure: stay on the idle prompt,
+                // which already asks for an artist name, and don't call the API.
                 guard !query.isEmpty else {
-                    state.status = .failed(message: "Enter an artist name to search.")
+                    state.status = .idle
                     return .cancel(id: CancelID.search)
                 }
 
