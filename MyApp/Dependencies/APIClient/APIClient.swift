@@ -46,15 +46,51 @@ private struct MusicBrainzRequest {
 
     /// Performs the request and throws if MusicBrainz does not return a successful HTTP response.
     static func data(for request: URLRequest) async throws -> Data {
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch let error as URLError {
+            // A cancelled request is not a failure to show: surface it as cancellation
+            // so callers (and TCA effect cancellation) can ignore it.
+            if error.code == .cancelled || Task.isCancelled {
+                throw CancellationError()
+            }
+            if offlineErrorCodes.contains(error.code) {
+                throw APIClientError.offline
+            }
+            throw error
+        }
+
         guard let response = response as? HTTPURLResponse else {
             throw APIClientError.invalidResponse
+        }
+        // MusicBrainz answers 503 when a client exceeds its rate limit.
+        if response.statusCode == 503 {
+            throw APIClientError.rateLimited
         }
         guard (200..<300).contains(response.statusCode) else {
             throw APIClientError.httpStatusCode(response.statusCode)
         }
         return data
     }
+
+    /// Decodes a MusicBrainz JSON payload, mapping decoding failures to ``APIClientError/decoding``.
+    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        do {
+            return try JSONDecoder().decode(type, from: data)
+        } catch is DecodingError {
+            throw APIClientError.decoding
+        }
+    }
+
+    /// URL loading errors that mean the device has no usable network connection.
+    private static let offlineErrorCodes: Set<URLError.Code> = [
+        .notConnectedToInternet,
+        .networkConnectionLost,
+        .dataNotAllowed,
+        .internationalRoamingOff
+    ]
 }
 
 /// The client used by features to talk to the MusicBrainz Web Service.
@@ -86,7 +122,7 @@ extension APIClient: DependencyKey {
                 ]
             )
             let data = try await MusicBrainzRequest.data(for: request)
-            return try JSONDecoder().decode(ArtistSearchResponse.self, from: data)
+            return try MusicBrainzRequest.decode(ArtistSearchResponse.self, from: data)
         },
         fetchArtist: { id in
             try await MusicBrainzRateLimiter.shared.waitForNextRequest()
@@ -98,7 +134,7 @@ extension APIClient: DependencyKey {
                 ]
             )
             let data = try await MusicBrainzRequest.data(for: request)
-            return try JSONDecoder().decode(Artist.self, from: data)
+            return try MusicBrainzRequest.decode(Artist.self, from: data)
         }
     )
 }
@@ -119,6 +155,12 @@ enum APIClientError: Error, Equatable, LocalizedError, Sendable {
     case httpStatusCode(Int)
     /// A readable error when the request cannot be constructed.
     case genericError(String)
+    /// The device has no usable network connection.
+    case offline
+    /// MusicBrainz rejected the request with HTTP 503 because the rate limit was exceeded.
+    case rateLimited
+    /// The response body could not be decoded into the expected model.
+    case decoding
 
     /// A readable explanation for the failed request.
     var errorDescription: String? {
@@ -127,6 +169,12 @@ enum APIClientError: Error, Equatable, LocalizedError, Sendable {
             "The server returned an invalid response."
         case let .httpStatusCode(code):
             "MusicBrainz returned HTTP \(code). Please try again."
+        case .offline:
+            "You appear to be offline. Check your connection and try again."
+        case .rateLimited:
+            "MusicBrainz is receiving too many requests. Please wait a moment and try again."
+        case .decoding:
+            "MusicBrainz returned data in an unexpected format."
         case let .genericError(message):
             message
         }

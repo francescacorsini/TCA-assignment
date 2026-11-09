@@ -11,6 +11,7 @@
 		B10000000000000000000302 /* AppFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000104 /* AppFeatureTests.swift */; };
 		B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000103 /* ItemDetailFeatureTests.swift */; };
 		B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000102 /* ItemListFeatureTests.swift */; };
+		B10000000000000000000305 /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000105 /* APIClientTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		B10000000000000000000102 /* ItemListFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListFeatureTests.swift; sourceTree = "<group>"; };
 		B10000000000000000000103 /* ItemDetailFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailFeatureTests.swift; sourceTree = "<group>"; };
 		B10000000000000000000104 /* AppFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFeatureTests.swift; sourceTree = "<group>"; };
+		B10000000000000000000105 /* APIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -46,6 +48,7 @@
 				B10000000000000000000302 /* AppFeatureTests.swift in Sources */,
 				B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */,
 				B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */,
+				B10000000000000000000305 /* APIClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +94,7 @@
 				B10000000000000000000102 /* ItemListFeatureTests.swift */,
 				B10000000000000000000103 /* ItemDetailFeatureTests.swift */,
 				B10000000000000000000104 /* AppFeatureTests.swift */,
+				B10000000000000000000105 /* APIClientTests.swift */,
 			);
 			path = Tests/MyAppTests;
 			sourceTree = "<group>";

@@ -20,4 +20,20 @@ struct ItemDetailFeatureTests {
             $0.status = .loaded
         }
     }
+
+    @Test(arguments: [APIClientError.offline, .rateLimited, .decoding])
+    func loadArtistFailureShowsErrorMessage(error: APIClientError) async {
+        let store = TestStore(initialState: ItemDetailFeature.State(artist: .mockRadiohead)) {
+            ItemDetailFeature()
+        } withDependencies: {
+            $0.apiClient.fetchArtist = { _ in throw error }
+        }
+
+        await store.send(.loadArtist) {
+            $0.status = .loading
+        }
+        await store.receive(\.artistResponse) {
+            $0.status = .failed(message: error.localizedDescription)
+        }
+    }
 }
