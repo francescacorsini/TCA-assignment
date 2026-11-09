@@ -8,11 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		A10000000000000000000301 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000501 /* ComposableArchitecture */; };
+		B10000000000000000000302 /* AppFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000104 /* AppFeatureTests.swift */; };
+		B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000103 /* ItemDetailFeatureTests.swift */; };
+		B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000102 /* ItemListFeatureTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000101 /* MyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000102 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B10000000000000000000101 /* MyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000102 /* ItemListFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListFeatureTests.swift; sourceTree = "<group>"; };
+		B10000000000000000000103 /* ItemDetailFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailFeatureTests.swift; sourceTree = "<group>"; };
+		B10000000000000000000104 /* AppFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFeatureTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +39,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B10000000000000000000601 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000302 /* AppFeatureTests.swift in Sources */,
+				B10000000000000000000303 /* ItemDetailFeatureTests.swift in Sources */,
+				B10000000000000000000304 /* ItemListFeatureTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000602 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000603 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -40,6 +71,7 @@
 			children = (
 				A10000000000000000000102 /* README.md */,
 				A10000000000000000000201 /* MyApp */,
+				B10000000000000000000003 /* MyAppTests */,
 				A10000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,8 +80,19 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000101 /* MyApp.app */,
+				B10000000000000000000101 /* MyAppTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000003 /* MyAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000102 /* ItemListFeatureTests.swift */,
+				B10000000000000000000103 /* ItemDetailFeatureTests.swift */,
+				B10000000000000000000104 /* AppFeatureTests.swift */,
+			);
+			path = Tests/MyAppTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -78,7 +121,43 @@
 			productReference = A10000000000000000000101 /* MyApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B10000000000000000000701 /* MyAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000903 /* Build configuration list for PBXNativeTarget "MyAppTests" */;
+			buildPhases = (
+				B10000000000000000000601 /* Sources */,
+				B10000000000000000000602 /* Frameworks */,
+				B10000000000000000000603 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B100000000000000000000B02 /* PBXTargetDependency */,
+			);
+			name = MyAppTests;
+			productName = MyAppTests;
+			productReference = B10000000000000000000101 /* MyAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		B100000000000000000000B01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000801 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000701;
+			remoteInfo = MyApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		B100000000000000000000B02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000701 /* MyApp */;
+			targetProxy = B100000000000000000000B01 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		A10000000000000000000801 /* Project object */ = {
@@ -91,6 +170,10 @@
 					A10000000000000000000701 = {
 						CreatedOnToolsVersion = 27.0;
 					};
+				B10000000000000000000701 = {
+					CreatedOnToolsVersion = 27.0;
+					TestTargetID = A10000000000000000000701;
+				};
 				};
 			};
 			buildConfigurationList = A10000000000000000000901 /* Build configuration list for PBXProject "MyApp" */;
@@ -111,6 +194,7 @@
 			projectRoot = "";
 			targets = (
 				A10000000000000000000701 /* MyApp */,
+				B10000000000000000000701 /* MyAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -265,6 +349,46 @@
 			};
 			name = Release;
 		};
+		B10000000000000000000A05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MyApp";
+				TEST_TARGET_NAME = MyApp;
+			};
+			name = Debug;
+		};
+		B10000000000000000000A06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MyApp";
+				TEST_TARGET_NAME = MyApp;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -282,6 +406,15 @@
 			buildConfigurations = (
 				A10000000000000000000A03 /* Debug */,
 				A10000000000000000000A04 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000903 /* Build configuration list for PBXNativeTarget "MyAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000A05 /* Debug */,
+				B10000000000000000000A06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

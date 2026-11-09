@@ -6,7 +6,7 @@ A small iOS app built with **SwiftUI** and **The Composable Architecture (TCA)**
 It has up to three screens on top of the public MusicBrainz REST API.
 
 > **Status:** MusicBrainz artist search and artist detail navigation are implemented through TCA
-> dependencies. The detail screen loads release groups; tests remain to be completed.
+> dependencies. The detail screen loads release groups, with reducer tests written using Swift Testing.
 
 ---
 
@@ -71,6 +71,8 @@ MyApp/
 ├── Dependencies/
 │   └── APIClient/
 │       └── APIClient.swift    // TCA live and mock-preview implementations for MusicBrainz
+├── Tests/
+│   └── MyAppTests/             // Swift Testing coverage for list, detail, and navigation reducers
 └── Assets.xcassets
 ```
 
@@ -132,12 +134,13 @@ No other third-party dependencies are used. Networking will use `URLSession`.
 - **Artist lookup loads up to 25 release groups** in one request, following MusicBrainz's lookup
   limit for linked entities.
 
-_To be completed as the app takes shape: the extra interaction, tests, and what I would do with
-more time._
+_To be completed as the app takes shape: the extra interaction and what I would do with more time._
 
 ## Tests
 
-Not added yet. When they are, they will use **Swift Testing** and TCA's `TestStore`.
+Tests use **Swift Testing** and TCA's `TestStore` to cover successful artist search, empty-query
+validation, detail lookup, and navigation to the selected artist. API calls are replaced with mock
+dependencies, so these tests do not depend on network availability.
 
 ## Use of AI tools
 
