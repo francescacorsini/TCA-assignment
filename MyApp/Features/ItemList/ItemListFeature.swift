@@ -23,7 +23,7 @@ struct ItemListFeature {
         /// Announces a user selection to the parent feature for navigation.
         case delegate(Delegate)
         /// Delivers the result of an artist search request.
-        case searchResponse(TaskResult<ArtistSearchResponse>)
+        case searchResponse(Result<ArtistSearchResponse, any Error>)
     }
 
     /// Events the list feature delegates to its parent.

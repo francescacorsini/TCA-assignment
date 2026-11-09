@@ -22,7 +22,7 @@ struct ItemDetailFeature {
         /// Retries the lookup after a failure.
         case retryButtonTapped
         /// Delivers the result of an artist lookup request.
-        case artistResponse(TaskResult<Artist>)
+        case artistResponse(Result<Artist, any Error>)
     }
 
     @Dependency(\.apiClient) private var apiClient

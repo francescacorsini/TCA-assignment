@@ -15,7 +15,7 @@ It has up to three screens on top of the public MusicBrainz REST API.
 | Tool / Setting | Version |
 | --- | --- |
 | Xcode | Latest stable (built with Xcode 27.2) |
-| Swift | 6.x toolchain, Swift 5 language mode |
+| Swift | 6.x toolchain, Swift 6 language mode |
 | Minimum deployment target | iOS 17.0 |
 | Platforms | iPhone, iPad |
 
