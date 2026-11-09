@@ -93,16 +93,20 @@ private struct ReleaseGroupRow: View {
     let releaseGroup: ReleaseGroup
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(releaseGroup.title)
-                .font(.headline)
+        HStack(spacing: 12) {
+            CoverArtView(url: releaseGroup.coverArtURL)
 
-            let metadata = [releaseGroup.primaryType, releaseGroup.firstReleaseDate]
-                .compactMap { $0 }
-            if !metadata.isEmpty {
-                Text(metadata.joined(separator: " · "))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(releaseGroup.title)
+                    .font(.headline)
+
+                let metadata = [releaseGroup.primaryType, releaseGroup.firstReleaseDate]
+                    .compactMap { $0 }
+                if !metadata.isEmpty {
+                    Text(metadata.joined(separator: " · "))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -110,6 +114,43 @@ private struct ReleaseGroupRow: View {
         .overlay(alignment: .bottom) {
             Divider()
         }
+    }
+}
+
+/// A square album cover that shows a placeholder while loading or when no cover exists.
+///
+/// Loaded with `AsyncImage` rather than through a TCA dependency: the cover is purely
+/// decorative and no reducer logic depends on it (see README, "Decisions and trade-offs").
+private struct CoverArtView: View {
+    let url: URL?
+
+    var body: some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case let .success(image):
+                image
+                    .resizable()
+                    .scaledToFill()
+            case .failure:
+                placeholder
+            default:
+                placeholder
+                    .overlay { ProgressView() }
+            }
+        }
+        .frame(width: 56, height: 56)
+        .clipShape(.rect(cornerRadius: 8))
+        // Decorative: the row's title already describes the release group.
+        .accessibilityHidden(true)
+    }
+
+    private var placeholder: some View {
+        Rectangle()
+            .fill(.quaternary)
+            .overlay {
+                Image(systemName: "opticaldisc")
+                    .foregroundStyle(.secondary)
+            }
     }
 }
 

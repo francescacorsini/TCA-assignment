@@ -115,3 +115,11 @@ struct ReleaseGroup: Decodable, Equatable, Identifiable {
         case primaryType = "primary-type"
     }
 }
+
+extension ReleaseGroup {
+    /// The front cover thumbnail from the Cover Art Archive (250 px).
+    /// The archive answers 404 when a release group has no cover, so callers need a placeholder.
+    var coverArtURL: URL? {
+        URL(string: "https://coverartarchive.org/release-group/\(id)/front-250")
+    }
+}

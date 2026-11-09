@@ -23,7 +23,7 @@ extension ArtistLifeSpan {
 extension ReleaseGroup {
     /// Sample Radiohead album release group.
     static let mockOKComputer = ReleaseGroup(
-        id: "b139d9a5-6b7f-4c36-9a2e-3a8e72b4b610",
+        id: "b1392450-e666-3926-a536-22c65f834433",
         title: "OK Computer",
         firstReleaseDate: "1997",
         primaryType: "Album"
@@ -31,7 +31,7 @@ extension ReleaseGroup {
 
     /// Sample Radiohead album release group.
     static let mockInRainbows = ReleaseGroup(
-        id: "ed6d9637-f4b2-4f8a-9d4f-c740acaa1ee1",
+        id: "6e335887-60ba-38f0-95af-fae7774336bf",
         title: "In Rainbows",
         firstReleaseDate: "2007",
         primaryType: "Album"

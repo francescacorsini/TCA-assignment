@@ -99,7 +99,8 @@ AppFeature
   \.path)` runs the reducer of each pushed screen.
 - **Side effects go through dependencies.** Reducers never call `URLSession` directly. The list
   searches artists and the detail feature loads an artist with release groups through
-  `@Dependency(\.apiClient)`.
+  `@Dependency(\.apiClient)`. The one deliberate exception is album cover thumbnails, which the
+  view loads with `AsyncImage` (see [Decisions and trade-offs](#decisions-and-trade-offs)).
 
 ## API integration
 
@@ -109,6 +110,12 @@ The app uses the public [MusicBrainz Web Service](https://musicbrainz.org/doc/Mu
 - Look up an artist and their release groups: `GET https://musicbrainz.org/ws/2/artist/{MBID}?inc=release-groups&fmt=json`
 
 MusicBrainz asks clients to send a descriptive `User-Agent` and limits requests to an average of one per second per IP address. The API client sends an app name/version and repository URL in the header and spaces requests at least one second apart. Its community-maintained catalogue can contain incomplete or ambiguous metadata, and release groups are limited to 25 in a lookup response; the app treats optional fields as missing data.
+
+Album covers come from the [Cover Art Archive](https://coverartarchive.org), MusicBrainz's companion image service, using the release-group MBID the lookup already returns:
+
+- Front cover thumbnail: `GET https://coverartarchive.org/release-group/{MBID}/front-250`
+
+The archive redirects to the image on archive.org, or answers `404` when a release group has no cover; the detail screen then shows a placeholder. These requests don't count toward the MusicBrainz rate limit. MusicBrainz has no artist images, so artists are shown without a picture.
 
 ## Third-party dependencies
 
@@ -133,6 +140,13 @@ No other third-party dependencies are used. Networking will use `URLSession`.
   flow is a natural push, and the stack scales if more screens are added.
 - **Artist lookup loads up to 25 release groups** in one request, following MusicBrainz's lookup
   limit for linked entities.
+- **Album covers use SwiftUI's `AsyncImage`, not a TCA dependency.** This is the one place where a
+  network request bypasses the store, and it's on purpose: the cover is purely decorative, no
+  reducer logic depends on it, and `AsyncImage` already handles loading, failure and cancellation.
+  The strict TCA alternative (an `ImageClient` dependency plus per-row image state and actions in
+  `ItemDetailFeature`) would make the images stubbable and testable with `TestStore`, but adds a
+  lot of machinery for thumbnails in a demo app. In a production app that needed disk caching,
+  offline support or tested image behaviour, I'd move image loading into a dependency.
 
 _To be completed as the app takes shape: other fancy extra interactions and what I would do with more time._
 
