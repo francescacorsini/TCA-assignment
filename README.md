@@ -3,7 +3,7 @@
 Assignment about small iOS app using The Composable Architecture.
 
 A small iOS app built with **SwiftUI** and **The Composable Architecture (TCA)**.
-It has up to three screens on top of a public REST API.
+It has up to three screens on top of the public MusicBrainz REST API.
 
 > **Status:** project skeleton. The TCA structure (features, navigation, dependency client) is in
 > place with empty placeholders. The public API, the screen content and the tests will be added
@@ -66,6 +66,7 @@ MyApp/
 │   └── ItemDetail/
 │       ├── ItemDetailFeature.swift // Detail screen reducer
 │       └── ItemDetailView.swift    // Detail screen view
+├── Models.swift                    // Codable models for MusicBrainz artist and release-group data
 ├── Dependencies/
 │   └── APIClient/
 │       └── APIClient.swift    // The client used by features to talk to the remote API
@@ -96,6 +97,15 @@ AppFeature
 - **Side effects go through dependencies.** Reducers never call `URLSession` directly. They will use
   `@Dependency(\.apiClient).`
 
+## API integration
+
+The app uses the public [MusicBrainz Web Service](https://musicbrainz.org/doc/MusicBrainz_API), which requires no API key. Example requests:
+
+- Search artists: `GET https://musicbrainz.org/ws/2/artist/?query=artist:radiohead&fmt=json&limit=25`
+- Look up an artist and their release groups: `GET https://musicbrainz.org/ws/2/artist/{MBID}?inc=release-groups&fmt=json`
+
+MusicBrainz asks clients to send a descriptive `User-Agent` and limits requests to an average of one per second per IP address. Its community-maintained catalogue can contain incomplete or ambiguous metadata, and release groups are limited to 25 in a lookup response; the app should present missing fields gracefully.
+
 ## Third-party dependencies
 
 | Package | Why |
@@ -109,6 +119,7 @@ No other third-party dependencies are used. Networking will use `URLSession`.
 - **SwiftUI only.** No UIKit.
 - **iOS 17 minimum.** This lets the views use Observation through `@ObservableState` (backported by
   TCA where needed) and `@Bindable` for navigation bindings.
+- **MusicBrainz** provides artist search and detail data without an API key. Its rate limit and community-maintained metadata mean requests must be paced and fields treated as optional.
 - **Default actor isolation is `nonisolated`.** Xcode's new-project default of
   `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` infers MainActor-isolated conformances for the
   `@Reducer` types. That produces a `circular reference` error while the compiler resolves
